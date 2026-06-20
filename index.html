@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogisTrack | Centro de Controle Operacional</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 30px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        h1 { color: #f39c12; border-bottom: 1px solid #30363d; padding-bottom: 10px; font-size: 2.2em; text-transform: uppercase; letter-spacing: 1px;}
+        h1 span { color: #ffffff; }
+        
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 30px; }
+        
+        /* Painel de Logs */
+        .panel-logs { background: #161b22; border: 1px solid #30363d; border-top: 4px solid #3498db; border-radius: 8px; padding: 20px; }
+        .panel-logs h2 { margin-top: 0; color: #3498db; font-size: 1.4em; }
+        .log-stream { max-height: 450px; overflow-y: auto; display: flex; flex-direction: column-reverse; font-family: monospace; }
+        .log-item { padding: 10px 0; border-bottom: 1px solid #21262d; font-size: 0.95em; color: #8b949e; }
+        .status-badge { background: #238636; color: #fff; padding: 2px 8px; border-radius: 10px; font-size: 0.8em; font-weight: bold;}
+
+        /* Painel da IA */
+        .panel-ai { background: #161b22; border: 1px solid #30363d; border-top: 4px solid #a371f7; border-radius: 8px; padding: 20px; }
+        .panel-ai h2 { margin-top: 0; color: #a371f7; font-size: 1.4em; }
+        
+        .ai-box { background: rgba(163, 113, 247, 0.1); border-left: 5px solid #a371f7; padding: 15px; border-radius: 4px; margin-bottom: 15px; animation: glow 2s infinite; }
+        .ai-box h4 { margin: 0 0 8px 0; color: #a371f7; font-size: 1.1em; display: flex; align-items: center;}
+        .ai-box p.issue { color: #ff7b72; margin: 0 0 10px 0; font-size: 0.9em; font-weight: bold;}
+        .ai-box p.action { margin: 0; font-size: 0.95em; color: #e6edf3; line-height: 1.5;}
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 0 0 rgba(163, 113, 247, 0.3); }
+            50% { box-shadow: 0 0 0 5px rgba(163, 113, 247, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(163, 113, 247, 0); }
+        }
+    </style>
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Logis<span>Track</span> 🚛 🏗️</h1>
+        <p style="color: #8b949e; margin-top: -10px;">Integração Assíncrona & Agentic AI Workflow</p>
+
+        <div class="dashboard-grid">
+            <div class="panel-logs">
+                <h2>📡 Telemetria Operacional (Gateway)</h2>
+                <div class="log-stream" id="fleet-logs">
+                    <div class="log-item">▶ Aguardando comunicação via Webhook...</div>
+                </div>
+            </div>
+
+            <div class="panel-ai">
+                <h2>🤖 Insights do Agente de IA (LLM Worker)</h2>
+                <div id="ai-container">
+                    <p style="color: #777; text-align: center;" id="no-alerts">Aguardando IA analisar as operações...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+
+        // Escuta os dados puros
+        socket.on('truck_update', (data) => {
+            const container = document.getElementById('fleet-logs');
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            item.innerHTML = `[${new Date(data.timestamp).toLocaleTimeString()}] Frota <strong>${data.truckId}</strong>: ${data.cargo} a ${data.temperature}°C. <span class="status-badge" style="background:${data.status === 'No Prazo' ? '#238636' : '#da3633'}">${data.status}</span>`;
+            container.appendChild(item);
+        });
+
+        // Escuta a recomendação processada pelo LLM
+        socket.on('ai_insight', (data) => {
+            const noAlerts = document.getElementById('no-alerts');
+            if(noAlerts) noAlerts.remove();
+
+            const container = document.getElementById('ai-container');
+            const aiBox = document.createElement('div');
+            aiBox.className = 'ai-box';
+            aiBox.innerHTML = `
+                <h4>🤖 Agente IA - Análise da Frota ${data.truckId}</h4>
+                <p class="issue">Gatilho: ${data.issue}</p>
+                <p class="action"><strong>Resolução:</strong> ${data.ai_recommendation}</p>
+            `;
+            container.insertBefore(aiBox, container.firstChild);
+        });
+    </script>
+</body>
+</html>
