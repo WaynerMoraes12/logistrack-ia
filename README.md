@@ -1,4 +1,4 @@
-Markdown# 🚛 LogisTrack - Event-Driven AI Pipeline
+🚛 LogisTrack - Event-Driven AI Pipeline
 
 Sistema de monitoramento logístico baseado em eventos que utiliza Node.js, Redis, Python e Inteligência Artificial para detectar anomalias operacionais e gerar ações corretivas em tempo real.
 
