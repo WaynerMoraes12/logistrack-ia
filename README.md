@@ -1,8 +1,6 @@
 # 🚛 LogisTrack - Event-Driven AI Pipeline
 
-Sistema de monitoramento logístico baseado em eventos que utiliza **Node.js**, **Redis**, **Python** e **Inteligência Artificial** para detectar anomalias operacionais e gerar ações corretivas em tempo real.
-
----
+Sistema de monitoramento logístico baseado em eventos que utiliza Node.js, Redis, Python e Inteligência Artificial para detectar anomalias operacionais e gerar ações corretivas em tempo real.
 
 ## 🎯 Objetivo
 
@@ -13,12 +11,10 @@ Receber dados de telemetria de caminhões via API, processar eventos de forma as
 * Problemas operacionais;
 * Alertas logísticos.
 
----
-
 ## 🏗️ Arquitetura
 
 ```text
-Cliente/Webhook
+Cliente / Webhook
        │
        ▼
  API Gateway (Node.js)
@@ -33,168 +29,50 @@ Cliente/Webhook
  Dashboard (Socket.io)
 ```
 
----
-
 ## 📂 Estrutura dos Arquivos
 
 ```text
 logistrack/
 │
-├── node_modules/
-├── .gitignore
-├── docker-compose.yml
-├── index.html
-├── package.json
-├── package-lock.json
-├── README.md
-├── requirements.txt
-├── server.js
-└── worker.py
+├── node_modules/         # Dependências instaladas pelo NPM (Node.js)
+├── .gitignore            # Evita subir dependências e segredos para o GitHub
+├── docker-compose.yml    # Infraestrutura (Sobe o Redis via Docker)
+├── index.html            # Dashboard (Interface visual em tempo real)
+├── package.json          # Lista dependências e scripts do projeto Node
+├── package-lock.json     # Garante versões exatas das dependências
+├── README.md             # Documentação do projeto
+├── requirements.txt      # Dependências necessárias para o Worker Python
+├── server.js             # API Gateway (Node, Express, Socket.io)
+└── worker.py             # Motor de Inteligência Artificial (Escuta o Redis)
 ```
-
-### 📦 node_modules/
-
-Contém todas as dependências instaladas pelo NPM.
-
-**Função:** Bibliotecas utilizadas pelo servidor Node.js.
-
----
-
-### 🚫 .gitignore
-
-Define quais arquivos não serão enviados para o GitHub.
-
-**Função:** Evitar subir dependências, arquivos temporários e segredos.
-
----
-
-### 🐳 docker-compose.yml
-
-Arquivo responsável por subir o Redis automaticamente usando Docker.
-
-**Função:** Infraestrutura do sistema.
-
----
-
-### 🌐 index.html
-
-Dashboard simples exibido no navegador.
-
-**Função:** Interface visual para acompanhar os eventos e respostas da IA em tempo real.
-
----
-
-### 📦 package.json
-
-Arquivo principal do projeto Node.js.
-
-**Função:**
-
-* Lista dependências;
-* Define scripts de execução;
-* Configura o projeto.
-
----
-
-### 🔒 package-lock.json
-
-Gerado automaticamente pelo NPM.
-
-**Função:** Garantir versões exatas das dependências.
-
----
-
-### 📄 README.md
-
-Documentação do projeto.
-
-**Função:** Explicar arquitetura, instalação e funcionamento.
-
----
-
-### 🐍 requirements.txt
-
-Lista das dependências Python.
-
-**Função:** Instalar bibliotecas necessárias para o Worker de IA.
-
-Exemplo:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 🚀 server.js
-
-API Gateway do sistema.
-
-**Função:**
-
-* Receber webhooks;
-* Expor endpoints REST;
-* Publicar eventos no Redis;
-* Enviar atualizações para o Dashboard via WebSocket.
-
-**Tecnologias:**
-
-* Node.js
-* Express
-* Redis
-* Socket.io
-
----
-
-### 🤖 worker.py
-
-Motor de Inteligência Artificial.
-
-**Função:**
-
-* Escutar eventos enviados pelo Redis;
-* Aplicar regras de negócio;
-* Detectar anomalias;
-* Acionar o agente de IA;
-* Gerar recomendações automáticas.
-
-**Tecnologias:**
-
-* Python
-* Redis
-* LLM Pipeline
-
----
 
 ## 🚀 Como Executar
 
-### 1. Subir o Redis
+### 1. Subir a Infraestrutura (Redis)
 
 ```bash
 docker-compose up -d
 ```
 
-### 2. Iniciar a API
+### 2. Iniciar a API (Gateway)
 
 ```bash
 npm install
 npm start
 ```
 
-Acesse:
+Acesse o dashboard em:
 
 ```text
 http://localhost:3000
 ```
 
-### 3. Iniciar o Worker de IA
+### 3. Iniciar o Worker de IA (Python)
 
 ```bash
 pip install -r requirements.txt
 python worker.py
 ```
-
----
 
 ## 🧪 Teste de Telemetria
 
@@ -214,29 +92,23 @@ curl -X POST http://localhost:3000/api/webhook/telemetria \
 -d '{"truckId":"MNGT-002","cargo":"Cimento Usinado","temperature":32.1,"status":"No Prazo"}'
 ```
 
----
-
 ## 🔥 Componentes Principais
 
-| Arquivo    | Papel                     |
-| ---------- | ------------------------- |
-| server.js  | API Gateway               |
-| worker.py  | Agente de IA              |
-| Redis      | Message Broker            |
-| index.html | Dashboard                 |
-| Docker     | Infraestrutura            |
-| Node.js    | Backend                   |
-| Python     | Processamento Inteligente |
-
----
+| Componente       | Ferramenta        | Papel na Arquitetura                     |
+| ---------------- | ----------------- | ---------------------------------------- |
+| API Gateway      | Node.js + Express | Recebe webhooks e gerencia conexões.     |
+| Message Broker   | Redis             | Fila de mensageria assíncrona (Buffer).  |
+| Processamento IA | Python            | Aplica regras de negócio e aciona o LLM. |
+| Front-end / UI   | HTML + Socket.io  | Dashboard em tempo real via WebSockets.  |
+| Infraestrutura   | Docker            | Padronização do ambiente.                |
 
 ## 📈 Conceitos Demonstrados
 
 * Microsserviços
 * Arquitetura Orientada a Eventos
-* Mensageria Assíncrona
-* Redis Pub/Sub
-* Integração com IA
+* Mensageria Assíncrona e Desacoplamento (Redis Pub/Sub)
 * APIs REST
-* WebSockets
-* Docker
+* WebSockets (Tempo Real)
+
+```
+```
